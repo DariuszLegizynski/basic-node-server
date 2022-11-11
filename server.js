@@ -1,18 +1,22 @@
-const fs = require('fs')
 const fsAsync = require('fs').promises
 const http = require('http')
-const path = require('path')
 
 const SERVER_PORT = 8080
 
 const requestListener = async (req, res) => {
-  let fileSystemPath = './public/'
-  console.log(req.url)
+  let fileSystemPath = './public'
 
   let contentType = 'text/html'
   let encoding = 'utf-8'
 
-  if(req.url === '/') {
+  if (req.url.match(/.js$/)) {
+    contentType = "application/javascript"
+    fileSystemPath += req.url
+    console.log("fileSystemPath: ", fileSystemPath)
+  } else if (req.url.match(/.css$/)) {
+    contentType = "text/css"
+    fileSystemPath += req.url
+  } else if (req.url === '/') {
     fileSystemPath += '/index.html'
   } else if (req.url === '/index2') {
     fileSystemPath += '/index2.html'
