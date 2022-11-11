@@ -14,20 +14,16 @@ const requestListener = async (req, res) => {
 
   if(req.url === '/') {
     fileSystemPath += '/index.html'
-    res.statusCode = 200
-  } else if (req.url === '/index2.html') {
+  } else if (req.url === '/index2') {
     fileSystemPath += '/index2.html'
-    res.statusCode = 200
   } else if (req.url.match(/.jpeg$/)) {
-    console.log("have a jpeg")
     contentType = "image/jpeg"
     fileSystemPath = "." + req.url
-    let jpgReadStream = fs.createReadStream(fileSystemPath)
-
-    res.statusCode = 200
     encoding = null
-
-    jpgReadStream.pipe(res)
+  } else if (req.url.match(/.gif$/)) {
+    contentType = "image/gif"
+    fileSystemPath = "." + req.url
+    encoding = null
   } else {
     fileSystemPath += '/404.html'
     res.statusCode = 404
