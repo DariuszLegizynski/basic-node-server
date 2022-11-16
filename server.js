@@ -1,9 +1,25 @@
 const fsAsync = require('fs').promises
 const http = require('http')
 
-const SERVER_PORT = 8080
+const SERVER_PORT = 3000
+
+parseCookies = str => {
+  let rx = /([^;=\s]*)=([^;]*)/g
+  let obj = {}
+  for (let m; m = rx.exec(str); )
+    obj[m[1]] = decodeURIComponent(m[2])
+  return obj
+}
+
+stringifyCookies = cookies => {
+  return Object.entries(cookies)
+    .map(([k,v]) => k + '=' + encodeURIComponent(v))
+    .join('; ')
+}
 
 const requestListener = async (req, res) => {
+  let cookies = parseCookies( req.headers.cookie)
+
   let fileSystemPath = './public'
 
   let contentType = 'text/html'
@@ -12,7 +28,6 @@ const requestListener = async (req, res) => {
   if (req.url.match(/.js$/)) {
     contentType = "application/javascript"
     fileSystemPath += req.url
-    console.log("fileSystemPath: ", fileSystemPath)
   } else if (req.url.match(/.css$/)) {
     contentType = "text/css"
     fileSystemPath += req.url
@@ -35,7 +50,7 @@ const requestListener = async (req, res) => {
 
   try {
     const doc = await fsAsync.readFile(fileSystemPath, encoding)
-    res.writeHead(200, { 'Content-Type': contentType })
+    res.writeHead(200, { 'Set-Cookie': stringifyCookies(cookies), 'Content-Type': contentType })
     res.end(doc)
   } catch (e) {
     res.writeHead(400, { 'Content-Type': contentType })
