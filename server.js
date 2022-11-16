@@ -53,7 +53,7 @@ const requestListener = async (req, res) => {
   try {
     const doc = await fsAsync.readFile(fileSystemPath, encoding)
     // res.writeHead(200, { 'Set-Cookie': stringifyCookies(cookies), 'Content-Type': contentType })
-    res.writeHead(200, { lastModified: myResources['last-modified'],'Content-Type': contentType })
+    res.writeHead(200, { lastModified: myResources['last-modified'], ETag: "7b-17459ce6217", 'Content-Type': contentType })
     res.end(doc)
   } catch (e) {
     res.writeHead(400, { 'Content-Type': contentType })
