@@ -3,6 +3,10 @@ const http = require('http')
 
 const SERVER_PORT = 3000
 
+const myResources = {
+  'last-modified': 'Mon, 14 Nov 2022 18:44:06 GMT'
+}
+
 parseCookies = str => {
   let rx = /([^;=\s]*)=([^;]*)/g
   let obj = {}
@@ -18,8 +22,6 @@ stringifyCookies = cookies => {
 }
 
 const requestListener = async (req, res) => {
-  let cookies = parseCookies( req.headers.cookie)
-
   let fileSystemPath = './public'
 
   let contentType = 'text/html'
@@ -50,7 +52,8 @@ const requestListener = async (req, res) => {
 
   try {
     const doc = await fsAsync.readFile(fileSystemPath, encoding)
-    res.writeHead(200, { 'Set-Cookie': stringifyCookies(cookies), 'Content-Type': contentType })
+    // res.writeHead(200, { 'Set-Cookie': stringifyCookies(cookies), 'Content-Type': contentType })
+    res.writeHead(200, { lastModified: myResources['last-modified'],'Content-Type': contentType })
     res.end(doc)
   } catch (e) {
     res.writeHead(400, { 'Content-Type': contentType })
