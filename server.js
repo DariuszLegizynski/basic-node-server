@@ -21,7 +21,9 @@ stringifyCookies = cookies => {
 
 const requestListener = async (req, res) => {
   let fileSystemPath = './public'
-  console.log("from the listener: ", SERVERTIME)
+  console.log("from the listener: ", SERVER_TIME)
+
+  console.log("req: ", req.headers)
 
   let contentType = 'text/html'
   let encoding = 'utf-8'
@@ -49,15 +51,23 @@ const requestListener = async (req, res) => {
     res.statusCode = 404
   }
 
+  let doc = null
+
   try {
-    const doc = await fsAsync.readFile(fileSystemPath, encoding)
-    // res.writeHead(200, { 'Set-Cookie': stringifyCookies(cookies), 'Content-Type': contentType })
-    res.writeHead(200, { lastModified: SERVER_TIME, ETag: "7b-17459ce6217", 'Content-Type': contentType })
-    res.end(doc)
+    doc = await fsAsync.readFile(fileSystemPath, encoding)
+    // res.writeHead(200, { 'Set-Cookie': stringifyCookies(cookies), ETag: "7b-17459ce6217", 'Content-Type': contentType })
   } catch (e) {
     res.writeHead(400, { 'Content-Type': contentType })
     res.end('NOT FOUND :( ')
   }
+
+  if(req.headers["if-modified-since"] === SERVER_TIME) {
+    res.writeHead(304)
+  } else {
+    res.writeHead(200, { "Last-Modified": SERVER_TIME, 'Content-Type': contentType })
+  }
+  
+  res.end(doc)
 }
 
 const server = http.createServer(requestListener)
