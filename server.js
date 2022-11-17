@@ -3,9 +3,7 @@ const http = require('http')
 
 const SERVER_PORT = 3000
 
-const myResources = {
-  'last-modified': 'Mon, 14 Nov 2022 18:44:06 GMT'
-}
+const SERVER_TIME = new Date().toUTCString()
 
 parseCookies = str => {
   let rx = /([^;=\s]*)=([^;]*)/g
@@ -23,6 +21,7 @@ stringifyCookies = cookies => {
 
 const requestListener = async (req, res) => {
   let fileSystemPath = './public'
+  console.log("from the listener: ", SERVERTIME)
 
   let contentType = 'text/html'
   let encoding = 'utf-8'
@@ -53,7 +52,7 @@ const requestListener = async (req, res) => {
   try {
     const doc = await fsAsync.readFile(fileSystemPath, encoding)
     // res.writeHead(200, { 'Set-Cookie': stringifyCookies(cookies), 'Content-Type': contentType })
-    res.writeHead(200, { lastModified: myResources['last-modified'], ETag: "7b-17459ce6217", 'Content-Type': contentType })
+    res.writeHead(200, { lastModified: SERVER_TIME, ETag: "7b-17459ce6217", 'Content-Type': contentType })
     res.end(doc)
   } catch (e) {
     res.writeHead(400, { 'Content-Type': contentType })
@@ -64,4 +63,5 @@ const requestListener = async (req, res) => {
 const server = http.createServer(requestListener)
 server.listen(SERVER_PORT, () => {
   console.log(`Server running on PORT ${SERVER_PORT}`)
+  console.log(SERVER_TIME)
 })
