@@ -23,8 +23,10 @@ const requestListener = async (req, res) => {
   req.url = 'index.html'
   let fileSystemPath = `./public/${req.url}`
 
-  console.log('req: ', req.headers)
-  // console.log("res: ", res)
+  // let fileSystemPath = './public'
+  // console.log("from the listener: ", SERVER_TIME)
+
+  // console.log("req: ", req.headers)
 
   let contentType = 'text/html'
   let encoding = 'utf-8'
